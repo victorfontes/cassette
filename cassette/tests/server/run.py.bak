@@ -13,9 +13,9 @@ def index():
 
 @app.route("/non-ascii-content")
 def non_ascii_content():
-    return ("Le Mexicain l'avait achetée en viager "
-            "à un procureur à la retraite. Après trois mois, "
-            "l'accident bête. Une affaire.")
+    return (u"Le Mexicain l'avait achetée en viager "
+            u"à un procureur à la retraite. Après trois mois, "
+            u"l'accident bête. Une affaire.")
 
 
 @app.route("/image")

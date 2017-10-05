@@ -9,7 +9,7 @@ we need to mock and patch this object.
 import logging
 import socket
 import ssl
-from http.client import HTTPConnection, HTTPSConnection
+from httplib import HTTPConnection, HTTPSConnection
 
 import semver
 

@@ -1,6 +1,6 @@
+import cStringIO
 import io
-import io
-from http.client import HTTPMessage
+from httplib import HTTPMessage
 
 from cassette.mocked_response import MockedResponse
 
@@ -41,8 +41,8 @@ class MockedHTTPResponse(MockedResponse):
 
         obj.fp = cls.create_file_descriptor(obj.content)
 
-        obj.msg = HTTPMessage(io.StringIO(str()), 0)
-        for k, v in obj.headers.items():
+        obj.msg = HTTPMessage(io.StringIO(unicode()), 0)
+        for k, v in obj.headers.iteritems():
             obj.msg.addheader(k, v)
 
         obj.msg.headers = data["raw_headers"]
@@ -53,7 +53,7 @@ class MockedHTTPResponse(MockedResponse):
     def create_file_descriptor(content):
         """Create a file descriptor for content."""
 
-        fp = io.StringIO(content)
+        fp = cStringIO.StringIO(content)
 
         return fp
 
@@ -61,7 +61,7 @@ class MockedHTTPResponse(MockedResponse):
         return self.fp.read()
 
     def getheaders(self):
-        return list(self.headers.items())
+        return self.headers.items()
 
     def getheader(self, name):
         return self.headers.get(name)

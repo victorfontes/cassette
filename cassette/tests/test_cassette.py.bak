@@ -3,13 +3,13 @@
 Test the cassette behavior.
 """
 
-import http.client
+import httplib
 import json
 import os
 import shutil
 import threading
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import urllib
+import urllib2
 import requests
 
 import mock
@@ -54,7 +54,7 @@ def to_key_val_list(value):
         raise ValueError('cannot encode objects that are not 2-tuples')
 
     if isinstance(value, dict):
-        value = list(value.items())
+        value = value.items()
 
     return list(value)
 
@@ -74,14 +74,14 @@ def _encode_params(data):
     elif hasattr(data, '__iter__'):
         result = []
         for k, vs in to_key_val_list(data):
-            if isinstance(vs, str) or not hasattr(vs, '__iter__'):
+            if isinstance(vs, basestring) or not hasattr(vs, '__iter__'):
                 vs = [vs]
             for v in vs:
                 if v is not None:
                     result.append(
                         (k.encode('utf-8') if isinstance(k, str) else k,
                          v.encode('utf-8') if isinstance(v, str) else v))
-        return urllib.parse.urlencode(result, doseq=True)
+        return urllib.urlencode(result, doseq=True)
 
 
 def url_for(endpoint):
@@ -133,11 +133,11 @@ class TestCassette(TestCase):
 
         # First run
         with cassette.play(self.filename, file_format=self.file_format):
-            r = urllib.request.urlopen(url, data)  # 1st run
+            r = urllib2.urlopen(url, data)  # 1st run
 
         self.assertEqual(self.had_response.called, False)
         if expected_content:
-            content = str(r.read(), "utf-8")
+            content = unicode(r.read(), "utf-8")
             if allow_incomplete_match:
                 self.assertIn(expected_content, content)
             else:
@@ -147,11 +147,11 @@ class TestCassette(TestCase):
 
         # Second run
         with cassette.play(self.filename, file_format=self.file_format):
-            r = urllib.request.urlopen(url, data)  # 2nd run
+            r = urllib2.urlopen(url, data)  # 2nd run
 
         self.assertEqual(self.had_response.called, True)
         if expected_content:
-            content = str(r.read(), "utf-8")
+            content = unicode(r.read(), "utf-8")
             if allow_incomplete_match:
                 self.assertIn(expected_content, content)
             else:
@@ -178,7 +178,7 @@ class TestCassette(TestCase):
 
         # First run
         with cassette.play(self.filename, file_format=self.file_format):
-            conn = http.client.HTTPConnection("127.0.0.1", 5000)
+            conn = httplib.HTTPConnection("127.0.0.1", 5000)
             conn.request("GET", "/index")
             r = conn.getresponse()
             conn.close()
@@ -192,7 +192,7 @@ class TestCassette(TestCase):
 
         # Second run
         with cassette.play(self.filename, file_format=self.file_format):
-            conn = http.client.HTTPConnection("127.0.0.1", 5000)
+            conn = httplib.HTTPConnection("127.0.0.1", 5000)
             conn.request("GET", "/index")
             r = conn.getresponse()
             conn.close()
@@ -212,7 +212,7 @@ class TestCassette(TestCase):
 
         # First run
         cassette.insert(self.filename, file_format=self.file_format)
-        r = urllib.request.urlopen(TEST_URL + '?manual')
+        r = urllib2.urlopen(TEST_URL + '?manual')
         cassette.eject()
 
         self.assertEqual(self.had_response.called, False)
@@ -222,7 +222,7 @@ class TestCassette(TestCase):
 
         # Second run
         cassette.insert(self.filename, file_format=self.file_format)
-        r = urllib.request.urlopen(TEST_URL + '?manual')
+        r = urllib2.urlopen(TEST_URL + '?manual')
         cassette.eject()
 
         self.assertEqual(self.had_response.called, True)
@@ -232,9 +232,9 @@ class TestCassette(TestCase):
         """Verify that cassette can store a non-ascii page."""
         self.check_urllib2_flow(
             url="http://127.0.0.1:5000/non-ascii-content",
-            expected_content="Le Mexicain l'avait achetée en viager "
-            "à un procureur à la retraite. Après trois mois, "
-            "l'accident bête. Une affaire.")
+            expected_content=u"Le Mexicain l'avait achetée en viager "
+            u"à un procureur à la retraite. Après trois mois, "
+            u"l'accident bête. Une affaire.")
 
     def test_flow_get_with_array_args(self):
         """Verify that cassette can store array args."""
@@ -260,7 +260,7 @@ class TestCassette(TestCase):
 
         # downloaded via urllib
         cassette.insert(self.filename, file_format=self.file_format)
-        actual_image = urllib.request.urlopen(TEST_URL_IMAGE).read()
+        actual_image = urllib2.urlopen(TEST_URL_IMAGE).read()
         cassette.eject()
 
         # has a matching image
@@ -271,7 +271,7 @@ class TestCassette(TestCase):
 
         # downloaded again via urllib
         cassette.insert(self.filename, file_format=self.file_format)
-        actual_image = urllib.request.urlopen(TEST_URL_IMAGE).read()
+        actual_image = urllib2.urlopen(TEST_URL_IMAGE).read()
         cassette.eject()
 
         # still has a matching image
@@ -283,13 +283,13 @@ class TestCassette(TestCase):
 
         # First run
         with cassette.play(self.filename, file_format=self.file_format):
-            self.assertRaises(urllib.error.HTTPError, urllib.request.urlopen, TEST_URL_404)
+            self.assertRaises(urllib2.HTTPError, urllib2.urlopen, TEST_URL_404)
 
         self.assertEqual(self.had_response.called, False)
 
         # Second run, it has the response.
         with cassette.play(self.filename, file_format=self.file_format):
-            self.assertRaises(urllib.error.HTTPError, urllib.request.urlopen, TEST_URL_404)
+            self.assertRaises(urllib2.HTTPError, urllib2.urlopen, TEST_URL_404)
 
         self.assertEqual(self.had_response.called, True)
 
@@ -410,10 +410,10 @@ class TestCassetteFile(TestCase):
         """Verify the flow when reading from an existing file."""
 
         with cassette.play(self.responses_filename):
-            request = urllib.request.Request(url, headers=request_headers or {})
-            r = urllib.request.urlopen(request)
+            request = urllib2.Request(url, headers=request_headers or {})
+            r = urllib2.urlopen(request)
 
-        content = str(r.read(), "utf-8")
+        content = unicode(r.read(), "utf-8")
         if allow_incomplete_match:
             self.assertIn(expected_content, content)
         else:
@@ -430,7 +430,7 @@ class TestCassetteFile(TestCase):
         """Verify that cassette can read a file when using httplib."""
 
         with cassette.play(self.responses_filename):
-            conn = http.client.HTTPConnection("127.0.0.1", 5000)
+            conn = httplib.HTTPConnection("127.0.0.1", 5000)
             conn.request("GET", "/index")
             r = conn.getresponse()
 
@@ -441,7 +441,7 @@ class TestCassetteFile(TestCase):
 
     def test_httplib_getheader_with_present_header(self):
         with cassette.play(self.responses_filename):
-            conn = http.client.HTTPConnection("127.0.0.1", 5000)
+            conn = httplib.HTTPConnection("127.0.0.1", 5000)
             conn.request("GET", "/index")
             r = conn.getresponse()
 
@@ -449,7 +449,7 @@ class TestCassetteFile(TestCase):
 
     def test_httplib_getheader_with_absent_header(self):
         with cassette.play(self.responses_filename):
-            conn = http.client.HTTPConnection("127.0.0.1", 5000)
+            conn = httplib.HTTPConnection("127.0.0.1", 5000)
             conn.request("GET", "/index")
             r = conn.getresponse()
 
@@ -462,9 +462,9 @@ class TestCassetteFile(TestCase):
         expected_content = "hello world"
 
         with cassette.play(self.responses_filename):
-            r = urllib.request.urlopen(url)
+            r = urllib2.urlopen(url)
             self.assertEqual(r.read(), expected_content)
-            r = urllib.request.urlopen(url)
+            r = urllib2.urlopen(url)
             self.assertEqual(r.read(), expected_content)
 
     def test_read_file_https(self):
@@ -481,9 +481,9 @@ class TestCassetteFile(TestCase):
 
         self.check_read_from_file_flow(
             url="http://127.0.0.1:5000/non-ascii-content",
-            expected_content="Le Mexicain l'avait achetée en viager "
-            "à un procureur à la retraite. Après trois mois, "
-            "l'accident bête. Une affaire.")
+            expected_content=u"Le Mexicain l'avait achetée en viager "
+            u"à un procureur à la retraite. Après trois mois, "
+            u"l'accident bête. Une affaire.")
 
     def test_request_headers_json(self):
         """Verify that request headers are respected for application/json."""

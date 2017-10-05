@@ -32,7 +32,7 @@ class CommonEncoderTest(object):
         """Verify dump and load are working. Used for implemented encoders."""
         data = self.encoder.load(self.encoder.dump(TEST_DATA))
 
-        for key in list(TEST_DATA.keys()):
+        for key in TEST_DATA.keys():
             self.assertEqual(data[key], TEST_DATA[key])
 
 

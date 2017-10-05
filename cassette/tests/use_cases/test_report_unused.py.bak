@@ -1,5 +1,5 @@
-import urllib.request, urllib.error, urllib.parse
-from io import StringIO
+import urllib2
+from cStringIO import StringIO
 
 from cassette.player import Player
 
@@ -8,7 +8,7 @@ def test_report_unused():
     config = {'log_cassette_used': True}
     player = Player('./cassette/tests/data/requests/', config=config)
     with player.play():
-        urllib.request.urlopen('http://httpbin.org/get')
+        urllib2.urlopen('http://httpbin.org/get')
 
     content = StringIO()
     player.report_unused_cassettes(content)

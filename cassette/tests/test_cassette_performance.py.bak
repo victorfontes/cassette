@@ -1,6 +1,6 @@
 import os
 import shutil
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 from datetime import datetime, timedelta
 from unittest import skip
 
@@ -35,7 +35,7 @@ class TestCassettePerformanceSingleFile(TestCase):
         # Create 100 requests to load in
         for i in range(0, 100):
             url = '%s?%s' % (TEST_URL, i)
-            urllib.request.urlopen(url).read()
+            urllib2.urlopen(url).read()
 
         # Write out to files
         cassette.eject()
@@ -48,7 +48,7 @@ class TestCassettePerformanceSingleFile(TestCase):
         # Create 100 requests to load in
         for i in range(0, 100):
             url = '%s?%s' % (TEST_URL, i)
-            urllib.request.urlopen(url).read()
+            urllib2.urlopen(url).read()
 
         # Write out to files
         cassette.eject()
@@ -74,7 +74,7 @@ class TestCassettePerformanceSingleFile(TestCase):
             # Make a few requests
             for j in range(0, 5):
                 url = '%s?%s' % (TEST_URL, j)
-                urllib.request.urlopen(url).read()
+                urllib2.urlopen(url).read()
 
             # Close cassette
             cassette.eject()
@@ -89,7 +89,7 @@ class TestCassettePerformanceSingleFile(TestCase):
             # Make a few requests
             for j in range(0, 5):
                 url = '%s?%s' % (TEST_URL, j)
-                urllib.request.urlopen(url).read()
+                urllib2.urlopen(url).read()
 
             # Close cassette
             cassette.eject()

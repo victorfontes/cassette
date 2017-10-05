@@ -1,4 +1,4 @@
-
+from __future__ import absolute_import
 import hashlib
 import logging
 import os
@@ -18,7 +18,7 @@ def _hash(content):
     return m.digest()
 
 
-class CassetteName(str):
+class CassetteName(unicode):
 
     """
     A CassetteName represents an unique way to retrieve the cassette
@@ -120,7 +120,7 @@ class CassetteLibrary(object):
 
     def rewind(self):
         """Restore all responses to a re-seekable state."""
-        for k, v in list(self.data.items()):
+        for k, v in self.data.items():
             v.rewind()
 
     def _had_response(self):
@@ -222,7 +222,7 @@ class FileCassetteLibrary(CassetteLibrary):
     def write_to_file(self):
         """Write mocked responses to file."""
         # Serialize the items via YAML
-        data = {k: v.to_dict() for k, v in list(self.data.items())}
+        data = {k: v.to_dict() for k, v in self.data.items()}
         encoded_str = self.encoder.dump(data)
 
         # Save the changes to file
@@ -257,7 +257,7 @@ class FileCassetteLibrary(CassetteLibrary):
         content = self.encoder.load(encoded_str)
 
         if content:
-            for k, v in list(content.items()):
+            for k, v in content.items():
                 mock_response_class = MockedHTTPResponse
                 data[k] = mock_response_class.from_dict(v)
 
@@ -285,7 +285,7 @@ class FileCassetteLibrary(CassetteLibrary):
 
     def get_all_available(self):
         """Return all available cassette."""
-        return list(self.data.keys())
+        return self.data.keys()
 
 
 class DirectoryCassetteLibrary(CassetteLibrary):
@@ -313,7 +313,7 @@ class DirectoryCassetteLibrary(CassetteLibrary):
         if not os.path.exists(self.filename):
             os.mkdir(self.filename)
 
-        for cassette_name, response in list(self.data.items()):
+        for cassette_name, response in self.data.items():
             filename = self.generate_filename(cassette_name)
             encoded_str = self.encoder.dump(response.to_dict())
 

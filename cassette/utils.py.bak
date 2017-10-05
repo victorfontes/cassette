@@ -22,7 +22,7 @@ class Encoder(object):
 
         :param str file_format:
         """
-        return file_format in list(SUPPORTED_FORMATS.keys()) or file_format == ''
+        return file_format in SUPPORTED_FORMATS.keys() or file_format == ''
 
     @staticmethod
     def get_encoder_from_file_format(file_format):
@@ -75,7 +75,7 @@ class JsonEncoder(Encoder):
 
         rv = []
         for item in data:
-            if isinstance(item, str):
+            if isinstance(item, unicode):
                 item = item.encode(TEXT_ENCODING)
             elif isinstance(item, list):
                 item = JsonEncoder.json_str_decode_list(item)
@@ -97,10 +97,10 @@ class JsonEncoder(Encoder):
         # nstead-of-unicode-ones-from-json-in-python
 
         rv = {}
-        for key, value in data.items():
-            if isinstance(key, str):
+        for key, value in data.iteritems():
+            if isinstance(key, unicode):
                 key = key.encode(TEXT_ENCODING)
-            if isinstance(value, str):
+            if isinstance(value, unicode):
                 value = value.encode(TEXT_ENCODING)
             elif isinstance(value, list):
                 value = JsonEncoder.json_str_decode_list(value)

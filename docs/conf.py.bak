@@ -41,8 +41,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Cassette'
-copyright = '2013, Charles-Axel Dein'
+project = u'Cassette'
+copyright = u'2013, Charles-Axel Dein'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -51,7 +51,7 @@ import pkg_resources
 try:
     release = pkg_resources.get_distribution('cassette').version
 except pkg_resources.DistributionNotFound:
-    print("Distribution information not found. Run 'setup.py develop'")
+    print "Distribution information not found. Run 'setup.py develop'"
     sys.exit(1)
 del pkg_resources
 version = '.'.join(release.split('.')[:2])
@@ -190,8 +190,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Cassette.tex', 'Cassette Documentation',
-   'Charles-Axel Dein', 'manual'),
+  ('index', 'Cassette.tex', u'Cassette Documentation',
+   u'Charles-Axel Dein', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -220,8 +220,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'cassette', 'Cassette Documentation',
-     ['Charles-Axel Dein'], 1)
+    ('index', 'cassette', u'Cassette Documentation',
+     [u'Charles-Axel Dein'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -234,8 +234,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Cassette', 'Cassette Documentation',
-   'Charles-Axel Dein', 'Cassette', 'One line description of project.',
+  ('index', 'Cassette', u'Cassette Documentation',
+   u'Charles-Axel Dein', 'Cassette', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -255,10 +255,10 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = 'Cassette'
-epub_author = 'Charles-Axel Dein'
-epub_publisher = 'Charles-Axel Dein'
-epub_copyright = '2013, Charles-Axel Dein'
+epub_title = u'Cassette'
+epub_author = u'Charles-Axel Dein'
+epub_publisher = u'Charles-Axel Dein'
+epub_copyright = u'2013, Charles-Axel Dein'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
